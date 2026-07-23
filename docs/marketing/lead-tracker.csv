@@ -1,0 +1,3 @@
+name,company,email_or_linkedin,source,date_added,template_sent,date_sent,replied,demo_booked,status,notes,follow_up_date
+Example: Sarah Mitchell,Summit Promo LLC,linkedin.com/in/sarahmitchell,LinkedIn search,2026-07-23,B,2026-07-23,N,N,cold,Drinkware distributor - personalize opener,2026-07-26
+Example: James Torres,BrandMyEvent,james@brandmyevent.com,Facebook group,2026-07-23,E,2026-07-24,Y,Y,warm,Event swag - demo Fri 2pm,2026-07-25

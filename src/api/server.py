@@ -728,6 +728,60 @@ def get_current_niche() -> dict:
     return {"niche": niche or {}}
 
 
+@app.post("/api/demo-request")
+def demo_request(body: dict = Body(...)) -> dict:
+    """Capture inbound demo/pilot requests from the landing page."""
+    import os
+    from datetime import datetime, timezone
+
+    name = str(body.get("name") or "").strip()
+    email = str(body.get("email") or "").strip()
+    company = str(body.get("company") or "").strip()
+    message = str(body.get("message") or "").strip()
+    if not name or not email or not company:
+        raise HTTPException(status_code=400, detail="Name, email, and company are required.")
+    if "@" not in email or "." not in email.split("@")[-1]:
+        raise HTTPException(status_code=400, detail="Please enter a valid email address.")
+
+    entry = {
+        "name": name,
+        "email": email,
+        "company": company,
+        "message": message,
+        "source": body.get("source") or "landing",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    path = PROJECT_ROOT / "data" / "demo_requests.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(entry) + "\n")
+
+    contact = os.getenv("CONTACT_EMAIL", "").strip()
+    return {
+        "status": "ok",
+        "message": "Thanks! We'll be in touch within 24 hours.",
+        "contact_email": contact or None,
+    }
+
+
+@app.get("/api/demo-requests")
+def list_demo_requests() -> dict:
+    """List inbound demo requests (for admin review)."""
+    path = PROJECT_ROOT / "data" / "demo_requests.jsonl"
+    if not path.exists():
+        return {"requests": []}
+    rows = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line:
+            try:
+                rows.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    rows.reverse()
+    return {"requests": rows[:100], "total": len(rows)}
+
+
 @app.post("/api/admin/seed-demo")
 def admin_seed_demo(force: bool = False) -> dict:
     """Seed demo tenants, users, and sample store orders."""

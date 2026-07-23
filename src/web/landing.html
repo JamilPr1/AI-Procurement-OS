@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI Procurement OS — Sourcing Platform</title>
+  <title>AI Procurement OS — Sourcing Platform for Promo Distributors</title>
+  <meta name="description" content="White-label sourcing platform for promotional product distributors. AI-powered CRM, RFQs, proposals, and branded quote stores. Try the live demo." />
+  <meta property="og:title" content="AI Procurement OS — Source promo products with AI" />
+  <meta property="og:description" content="From buyer research to factory quotes to branded storefronts. Built for promo distributors and agencies." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ai-procurement-os.onrender.com/" />
   <link rel="stylesheet" href="/static/landing.css" />
 </head>
 <body class="landing-body">
@@ -23,6 +28,8 @@
         <a href="#how-it-works">How it works</a>
         <a href="#features">Features</a>
         <a href="#stores">Stores</a>
+        <a href="/marketing">Pricing</a>
+        <a href="#get-started">Free pilot</a>
         <a href="/login" class="landing-btn landing-btn-ghost">Sign in</a>
         <a href="/store?tenant=demo" class="landing-btn landing-btn-primary">Browse store</a>
       </nav>
@@ -38,7 +45,7 @@
         product-finder storefronts — built for agencies and distributors.
       </p>
       <div class="landing-cta">
-        <a href="/login" class="landing-btn landing-btn-primary">Sign in to platform</a>
+        <a href="#get-started" class="landing-btn landing-btn-primary">Request free pilot</a>
         <a href="/store?tenant=demo" class="landing-btn landing-btn-ghost">View sample store</a>
       </div>
       <ul class="landing-trust">
@@ -109,6 +116,46 @@
       </div>
     </section>
 
+    <section id="get-started" class="landing-section landing-demo">
+      <div class="landing-demo-inner">
+        <div class="landing-demo-copy">
+          <h2 class="landing-section-title">Start your free 14-day pilot</h2>
+          <p class="landing-section-lead">
+            We'll set up your branded quote store and CRM. No credit card. Plans from $99/mo after pilot.
+          </p>
+          <ul class="landing-demo-perks">
+            <li>Branded AI Product Finder store</li>
+            <li>Full sourcing CRM pipeline</li>
+            <li>Onboarding call included</li>
+          </ul>
+          <p class="landing-demo-alt">
+            Prefer to explore first? <a href="/store?tenant=demo">Browse the demo store →</a>
+            · <a href="/marketing">See pricing →</a>
+          </p>
+        </div>
+        <form class="landing-demo-form" id="demoForm">
+          <label>
+            <span>Your name</span>
+            <input type="text" name="name" required placeholder="Jane Smith" />
+          </label>
+          <label>
+            <span>Work email</span>
+            <input type="email" name="email" required placeholder="you@company.com" />
+          </label>
+          <label>
+            <span>Company</span>
+            <input type="text" name="company" required placeholder="Your Promo Co" />
+          </label>
+          <label>
+            <span>What do you source? (optional)</span>
+            <input type="text" name="message" placeholder="Drinkware, event swag, corporate gifts…" />
+          </label>
+          <button type="submit" class="landing-btn landing-btn-primary landing-demo-submit">Request free pilot</button>
+          <p class="landing-demo-status hidden" id="demoFormStatus"></p>
+        </form>
+      </div>
+    </section>
+
     <section id="stores" class="landing-section">
       <h2 class="landing-section-title">Partner storefronts</h2>
       <p class="landing-section-lead">Browse live AI Product Finder stores powered by this platform.</p>
@@ -127,8 +174,9 @@
       <nav class="landing-footer-links">
         <a href="/">Home</a>
         <a href="/login">Sign in</a>
+        <a href="/marketing">Pricing</a>
+        <a href="#get-started">Free pilot</a>
         <a href="/store?tenant=demo">Sample store</a>
-        <a href="/marketing">Product overview</a>
       </nav>
     </div>
     <p class="landing-footer-copy">&copy; AI Procurement OS. For authorized operators only.</p>
@@ -186,6 +234,35 @@
     function esc(s) {
       return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
     }
+
+    document.getElementById("demoForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const status = document.getElementById("demoFormStatus");
+      const btn = form.querySelector(".landing-demo-submit");
+      const payload = Object.fromEntries(new FormData(form).entries());
+      btn.disabled = true;
+      btn.textContent = "Sending…";
+      status.className = "landing-demo-status";
+      try {
+        const res = await fetch("/api/demo-request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Request failed");
+        status.textContent = data.message || "Thanks! We'll be in touch within 24 hours.";
+        status.classList.add("success");
+        form.reset();
+      } catch (err) {
+        status.textContent = err.message || "Something went wrong. Please try again.";
+        status.classList.add("error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Request free pilot";
+      }
+    });
   </script>
 </body>
 </html>
