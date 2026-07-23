@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from src.core.email import EmailService
+from src.core.notifications import notify_admin
 from src.core.pipeline_stages import GATE_LABELS, stage_by_id
 
 
@@ -92,6 +93,10 @@ class ReviewWorkflow:
                 html_body=outreach.get("html_body"),
                 html=bool(outreach.get("html_body")),
             )
+            notify_admin(
+                f"Outreach sent — {gate}",
+                f"To: {to}\nSubject: {outreach.get('subject', '')}\nLead: {lead_id or 'n/a'}",
+            )
             if send_result.get("status") == "dry_run":
                 send_result["demo"] = True
             outreach["status"] = "sent"
@@ -134,6 +139,10 @@ class ReviewWorkflow:
                 email_draft.get("body", ""),
                 html_body=email_draft.get("html_body"),
                 html=bool(email_draft.get("html_body")),
+            )
+            notify_admin(
+                f"Proposal sent — {gate}",
+                f"To: {to}\nSubject: {email_draft.get('subject', '')}\nDeal: {deal_id or 'n/a'}",
             )
             if send_result.get("status") == "dry_run":
                 send_result["demo"] = True

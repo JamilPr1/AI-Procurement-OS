@@ -19,5 +19,21 @@ services:
         value: "true"
       - key: EMAIL_DRY_RUN
         value: "true"
+      - key: CONTACT_EMAIL
+        value: aarfa.developers@gmail.com
+      - key: NOTIFY_EMAIL
+        value: aarfa.developers@gmail.com
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        value: aarfa.developers@gmail.com
+      - key: SMTP_FROM
+        value: aarfa.developers@gmail.com
+      - key: SMTP_PASS
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
       - key: OPENAI_API_KEY
         sync: false

@@ -118,6 +118,8 @@ def _tid() -> str:
 def health() -> dict:
     from src.core.platform_urls import get_public_base_url
 
+    from src.core.notifications import admin_email
+
     engine = _init()
     dash = _brain.config.get("dashboard", {}) if _brain else {}  # type: ignore
     public_url = get_public_base_url(_brain.config if _brain else {})
@@ -126,6 +128,7 @@ def health() -> dict:
         "llm": engine.llm.health_check(),
         "project": _brain.config.get("project") if _brain else {},
         "public_url": public_url,
+        "contact_email": admin_email(),
         "store": {"enabled": True, "url": f"{public_url}/store?tenant=demo"},
         "landing": "/",
         "crm": "/app",
@@ -731,8 +734,9 @@ def get_current_niche() -> dict:
 @app.post("/api/demo-request")
 def demo_request(body: dict = Body(...)) -> dict:
     """Capture inbound demo/pilot requests from the landing page."""
-    import os
     from datetime import datetime, timezone
+
+    from src.core.notifications import admin_email, notify_demo_request
 
     name = str(body.get("name") or "").strip()
     email = str(body.get("email") or "").strip()
@@ -756,12 +760,22 @@ def demo_request(body: dict = Body(...)) -> dict:
     with path.open("a", encoding="utf-8") as f:
         f.write(json.dumps(entry) + "\n")
 
-    contact = os.getenv("CONTACT_EMAIL", "").strip()
+    notify_result = notify_demo_request(entry)
+    contact = admin_email()
     return {
         "status": "ok",
-        "message": "Thanks! We'll be in touch within 24 hours.",
-        "contact_email": contact or None,
+        "message": f"Thanks! We'll contact you at {email} within 24 hours.",
+        "contact_email": contact,
+        "notification": notify_result.get("status"),
     }
+
+
+@app.get("/api/contact")
+def contact_info() -> dict:
+    from src.core.notifications import admin_email
+
+    email = admin_email()
+    return {"email": email, "mailto": f"mailto:{email}", "pilot_form": "/#get-started"}
 
 
 @app.get("/api/demo-requests")
