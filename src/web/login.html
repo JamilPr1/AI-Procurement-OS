@@ -166,7 +166,7 @@
         err.classList.remove("hidden");
         return;
       }
-      sessionStorage.setItem("crm_user", JSON.stringify(data.user));
+      sessionStorage.setItem("crm_user", JSON.stringify({ ...data.user, token: data.token }));
       const next = params.get("next");
       if (next && next.startsWith("/app")) {
         location.href = next;

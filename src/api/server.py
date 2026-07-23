@@ -6,9 +6,20 @@ import asyncio
 import json
 from pathlib import Path
 
-from fastapi import Body, FastAPI, HTTPException
-from fastapi.responses import FileResponse, StreamingResponse
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(PROJECT_ROOT / ".env")
+except ImportError:
+    pass
+
+from fastapi import Body, FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
+
+from src.api.security import auth_middleware, issue_token
 
 from src.agency import Agency
 from src.core.brain import Brain
@@ -38,10 +49,10 @@ from src.saas.demo_seed import collect_credentials, seed_demo_data
 from src.saas.credentials_doc import generate_credentials_doc
 from src.core.store_repair import repair_store_orders
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
 
 app = FastAPI(title="AI Procurement CRM")
+app.middleware("http")(auth_middleware)
 _brain: Brain | None = None
 _engine: PipelineEngine | None = None
 _storage: Storage | None = None
@@ -428,16 +439,15 @@ def auth_login(body: dict) -> dict:
     user = _storage.verify_tenant_user(email, password)  # type: ignore
     if not user:
         raise HTTPException(401, "Invalid email or password")
-    return {
-        "user": {
-            "email": user["email"],
-            "name": user.get("name"),
-            "role": user.get("role"),
-            "tenant_id": user.get("tenant_id"),
-            "tenant_name": user.get("tenant_name"),
-            "tenant_slug": user.get("tenant_slug"),
-        }
+    profile = {
+        "email": user["email"],
+        "name": user.get("name"),
+        "role": user.get("role"),
+        "tenant_id": user.get("tenant_id"),
+        "tenant_name": user.get("tenant_name"),
+        "tenant_slug": user.get("tenant_slug"),
     }
+    return {"user": profile, "token": issue_token(profile)}
 
 
 @app.get("/api/store/tenant/{slug}")

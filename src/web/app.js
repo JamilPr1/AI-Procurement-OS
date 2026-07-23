@@ -9,7 +9,7 @@ function getCrmUser() {
 }
 
 const CRM_USER = getCrmUser();
-if (!CRM_USER) {
+if (!CRM_USER?.token) {
   const next = encodeURIComponent(location.pathname + location.search + location.hash);
   location.replace(`/login?next=${next}`);
   throw new Error("auth_required");

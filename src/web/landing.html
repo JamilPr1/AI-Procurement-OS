@@ -250,8 +250,15 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Request failed");
+        const raw = await res.text();
+        let data = {};
+        try { data = raw ? JSON.parse(raw) : {}; } catch { /* non-json */ }
+        if (!res.ok) {
+          const msg = data.detail || (res.status === 404
+            ? "Form unavailable — email aarfa.developers@gmail.com directly"
+            : raw || res.statusText);
+          throw new Error(typeof msg === "string" ? msg : "Request failed");
+        }
         status.textContent = data.message || "Thanks! We'll be in touch within 24 hours.";
         status.classList.add("success");
         form.reset();
