@@ -1,0 +1,27 @@
+id: qualification
+name: Qualification Agent
+stage: 2
+description: Acts as sales rep — collects complete buyer requirements
+
+inputs:
+  - buyer_message
+  - conversation_history
+
+outputs:
+  - product_description
+  - quantity
+  - material
+  - color
+  - logo_spec
+  - packaging
+  - delivery_date
+  - shipping_destination
+  - budget_range
+  - completeness_score
+
+required_fields:
+  - quantity
+  - product_description
+  - shipping_destination
+
+prompt: prompts/qualification.md

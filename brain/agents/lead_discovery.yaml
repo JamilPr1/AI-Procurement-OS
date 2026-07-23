@@ -1,0 +1,37 @@
+id: lead_discovery
+name: Lead Discovery Agent
+stage: 1
+description: Finds potential buyers in the promotional products vertical
+
+inputs:
+  - vertical
+  - target_buyer_types
+  - geography  # optional
+
+outputs:
+  - company_name
+  - contact_person
+  - email
+  - phone
+  - linkedin
+  - estimated_size
+  - industry
+  - lead_score
+  - source
+
+tools:
+  - google_maps      # future
+  - linkedin         # future
+  - business_directories
+  - manual_csv_import
+
+sources:
+  - company_websites
+  - business_directories
+  - procurement_portals
+
+scoring:
+  config_ref: lead_scoring
+  min_score_to_queue: 60
+
+prompt: prompts/lead_discovery.md

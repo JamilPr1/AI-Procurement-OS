@@ -1,0 +1,22 @@
+id: niche_finder
+name: Niche Finder Agent
+stage: 0
+description: Identifies the top buyer niche and search angles before lead discovery
+
+inputs:
+  - vertical
+  - region
+  - trend_signals
+
+outputs:
+  - niche_name
+  - niche_score
+  - product_keywords
+  - buyer_search_queries
+  - rationale
+
+tools:
+  - web_search
+  - trend_analysis
+
+prompt: prompts/niche_finder.md

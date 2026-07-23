@@ -1,0 +1,97 @@
+# Master sourcing pipeline — stage order and handoffs
+
+name: buyer_to_delivery
+version: "1.0"
+description: "End-to-end flow from lead discovery to customer delivery"
+
+stages:
+  - id: lead_discovery
+    agent: lead_discovery
+    input: null
+    output: leads[]
+    next: company_research
+
+  - id: company_research
+    agent: company_research
+    input: lead_id
+    output: company_profile
+    next: personalization
+
+  - id: personalization
+    agent: personalization
+    input: company_profile
+    output: outreach_draft
+    next: outreach
+
+  - id: outreach
+    agent: outreach
+    input: outreach_draft
+    output: outreach_sent
+    next: qualification
+    human_gate: outreach_first_batch
+
+  - id: qualification
+    agent: qualification
+    input: buyer_reply
+    output: buyer_requirements
+    next: product_research
+    trigger: on_reply
+
+  - id: product_research
+    agent: product_research
+    input: buyer_requirements
+    output: product_spec
+    next: supplier_discovery
+
+  - id: supplier_discovery
+    agent: supplier_discovery
+    input: product_spec
+    output: supplier_shortlist
+    next: supplier_verification
+
+  - id: supplier_verification
+    agent: supplier_verification
+    input: supplier_shortlist
+    output: verified_suppliers
+    next: rfq
+    human_gate: supplier_final_approval
+
+  - id: rfq
+    agent: rfq
+    input: verified_suppliers
+    output: rfq_sent[]
+    next: quote_comparison
+    trigger: on_quotes_received
+
+  - id: quote_comparison
+    agent: quote_comparison
+    input: quotes[]
+    output: recommendation
+    next: proposal
+
+  - id: proposal
+    agent: proposal
+    input: recommendation
+    output: proposal_draft
+    next: order_tracking
+    human_gate: proposal_send
+
+  - id: order_tracking
+    agent: order_tracking
+    input: approved_proposal
+    output: order_status
+    next: customer_updates
+    human_gate: contract_sign
+
+  - id: customer_updates
+    agent: customer_support
+    input: order_status
+    output: portal_snapshot
+    next: null
+
+  - id: finance
+    agent: finance
+    input: order_status
+    output: invoice_status
+    parallel: true
+    human_gate: payment_over_threshold

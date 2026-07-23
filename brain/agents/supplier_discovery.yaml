@@ -1,0 +1,26 @@
+id: supplier_discovery
+name: Supplier Discovery Agent
+stage: 4
+description: Finds manufacturers across B2B platforms and directories
+
+inputs:
+  - product_spec
+
+outputs:
+  - factory_name
+  - platform_source
+  - moq
+  - unit_price_estimate
+  - certifications
+  - years_in_business
+  - export_countries
+
+sources:
+  - alibaba
+  - made_in_china
+  - global_sources
+  - factory_websites
+  - trade_directories
+  - manual_entry
+
+prompt: prompts/supplier_discovery.md

@@ -1,0 +1,20 @@
+id: outreach
+name: Outreach Agent
+stage: 1
+description: Sends emails and LinkedIn messages, manages follow-ups
+
+inputs:
+  - outreach_draft
+  - contact_channels
+
+outputs:
+  - sent_at
+  - channel
+  - follow_up_schedule
+  - reply_status
+
+modes:
+  draft_only: true   # Phase 1 — human sends; set false when validated
+  follow_up_days: [3, 7, 14]
+
+prompt: prompts/outreach.md

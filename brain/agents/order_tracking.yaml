@@ -1,0 +1,28 @@
+id: order_tracking
+name: Order Tracking Agent
+stage: 9
+description: Monitors production, QC, shipping, and delivery milestones
+
+inputs:
+  - order_id
+  - supplier_updates
+
+outputs:
+  - deposit_status
+  - production_percent
+  - qc_status
+  - shipment_status
+  - container_tracking
+  - eta
+
+milestones:
+  - deposit_received
+  - production_started
+  - production_complete
+  - qc_scheduled
+  - qc_passed
+  - shipment_booked
+  - in_transit
+  - delivered
+
+prompt: prompts/order_tracking.md

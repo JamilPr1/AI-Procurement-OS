@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Product Finder — SaaS Sourcing Platform</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="stylesheet" href="/static/store.css" />
+  <style>
+    .mkt-hero { text-align: center; padding: 3rem 0 2rem; }
+    .mkt-hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 1rem; }
+    .mkt-hero p { color: #94a3b8; max-width: 640px; margin: 0 auto 2rem; font-size: 1.1rem; line-height: 1.6; }
+    .mkt-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+    .mkt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin: 2rem 0; }
+    .mkt-card { background: rgba(30,41,59,0.9); border: 1px solid rgba(148,163,184,0.15); border-radius: 16px; padding: 1.5rem; }
+    .mkt-card h3 { margin: 0 0 0.5rem; }
+    .mkt-card p { color: #94a3b8; font-size: 0.9rem; margin: 0; }
+    .mkt-pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 2rem 0; }
+    .mkt-plan { background: rgba(30,41,59,0.95); border: 1px solid rgba(148,163,184,0.2); border-radius: 16px; padding: 1.5rem; text-align: center; }
+    .mkt-plan.featured { border-color: #8b5cf6; box-shadow: 0 0 30px rgba(139,92,246,0.2); }
+    .mkt-plan h4 { margin: 0; font-size: 1.1rem; }
+    .mkt-plan .price { font-size: 2rem; font-weight: 700; margin: 0.75rem 0; color: #4ade80; }
+    .mkt-plan ul { list-style: none; padding: 0; margin: 1rem 0; font-size: 0.85rem; color: #94a3b8; text-align: left; }
+    .mkt-plan li { padding: 0.35rem 0; }
+    .mkt-stores { margin: 2rem 0; }
+    .mkt-store-link { display: block; padding: 0.75rem 1rem; background: rgba(15,23,42,0.6); border-radius: 10px; margin: 0.5rem 0; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
+    .mkt-store-link:hover { background: rgba(59,130,246,0.15); }
+    .store-nav-cta { color: #93c5fd !important; font-weight: 600; }
+    @media (max-width: 600px) {
+      .mkt-hero { padding: 2rem 0 1.5rem; }
+      .mkt-cta { flex-direction: column; align-items: stretch; }
+      .mkt-cta .btn { text-align: center; }
+    }
+  </style>
+</head>
+<body class="store-body">
+  <header class="store-header">
+    <div class="store-header-inner">
+      <a href="/" class="store-brand">
+        <div class="store-logo">AI</div>
+        <div class="store-brand-text">
+          <div class="store-name">AI Product Finder</div>
+          <div class="store-tagline">SaaS sourcing platform</div>
+        </div>
+      </a>
+      <nav class="store-header-nav">
+        <a href="/" class="store-nav-link">Home</a>
+        <a href="/login" class="store-nav-link">Sign in</a>
+        <a href="/store?tenant=demo" class="store-nav-link store-nav-cta">Demo store</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="store-main" style="max-width:960px">
+    <section class="mkt-hero">
+      <h1>Ecommerce meets AI sourcing</h1>
+      <p>
+        Your customers describe what they need. AI asks budget, material, color, logo, and delivery —
+        then automatically finds suppliers, builds quotations, and takes orders.
+        You run it as a white-label SaaS for your clients.
+      </p>
+      <div class="mkt-cta">
+        <a href="/store?tenant=demo" class="btn primary">Browse demo store</a>
+        <a href="/login" class="btn ghost">Sign in to platform</a>
+      </div>
+    </section>
+
+    <section class="mkt-grid">
+      <div class="mkt-card">
+        <h3>AI Product Finder</h3>
+        <p>Conversational intake replaces static catalogs. Customers type "500 custom mugs" and get a full quote.</p>
+      </div>
+      <div class="mkt-card">
+        <h3>Supplier matching</h3>
+        <p>Live web search across Alibaba, Made-in-China, and B2B platforms with MOQ and price extraction.</p>
+      </div>
+      <div class="mkt-card">
+        <h3>Multi-tenant SaaS</h3>
+        <p>Provision branded stores per customer. Starter and Growth plans with deal limits and margin control.</p>
+      </div>
+      <div class="mkt-card">
+        <h3>Full CRM pipeline</h3>
+        <p>Leads, hot leads, proposals, tracking, contacts, and AI agent pipeline — all in one dashboard.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="text-align:center;margin:2rem 0 1rem">Plans</h2>
+      <div class="mkt-pricing">
+        <div class="mkt-plan">
+          <h4>Starter</h4>
+          <div class="price">$99<span style="font-size:0.4em;color:#94a3b8">/mo</span></div>
+          <ul>
+            <li>✓ 3 users</li>
+            <li>✓ 10 active deals</li>
+            <li>✓ Branded AI store</li>
+            <li>✓ CRM dashboard</li>
+          </ul>
+        </div>
+        <div class="mkt-plan featured">
+          <h4>Growth</h4>
+          <div class="price">$299<span style="font-size:0.4em;color:#94a3b8">/mo</span></div>
+          <ul>
+            <li>✓ 10 users</li>
+            <li>✓ 50 active deals</li>
+            <li>✓ Priority supplier search</li>
+            <li>✓ White-label store</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="mkt-stores">
+      <h2 style="text-align:center;margin:2rem 0 1rem">Partner storefronts</h2>
+      <div id="demoStores">Loading stores…</div>
+    </section>
+  </main>
+
+  <footer class="store-footer">
+    <div class="store-footer-inner">
+      <p>AI Procurement OS v0.2</p>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/login">Sign in</a>
+        <a href="/store?tenant=demo">Demo store</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    fetch("/api/saas/tenants").then(r => r.json()).then(data => {
+      const el = document.getElementById("demoStores");
+      const tenants = (data.tenants || []).filter(t => t.slug && t.slug !== "default");
+      el.innerHTML = tenants.map(t =>
+        `<a class="mkt-store-link" href="/store?tenant=${encodeURIComponent(t.slug)}">
+          <strong>${t.name}</strong> — ${t.tagline || t.slug} →
+        </a>`
+      ).join("") || "<p style='color:#64748b'>No storefronts available.</p>";
+    }).catch(() => {
+      document.getElementById("demoStores").innerHTML = "<p>Could not load stores.</p>";
+    });
+  </script>
+</body>
+</html>

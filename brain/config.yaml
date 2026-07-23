@@ -1,0 +1,121 @@
+# AI Procurement OS — Global Configuration
+
+project:
+  name: "AI Procurement OS"
+  version: "0.2.0"
+  mode: local
+
+vertical:
+  name: promotional_products
+  display_name: "Promotional Products"
+  target_buyers:
+    - promotional_product_distributors
+    - marketing_agencies
+    - corporate_gift_companies
+    - schools
+    - universities
+    - hospitals
+    - large_businesses
+    - construction_companies
+
+llm:
+  provider: ollama
+  base_url: "http://localhost:11434"
+  model: "llama3.2:1b"
+  temperature: 0.2
+  max_tokens: 1024
+  timeout_seconds: 45
+
+paths:
+  data: data
+  logs: logs
+  brain: brain
+  database: data/platform.db
+
+agency:
+  tenant_id: agency_primary
+  name: "Your Sourcing Agency"
+  slug: default
+  pitch: "We are a multi-supplier sourcing partner — one roof for vetted factories, QC, and logistics."
+  default_margin_percent: 15
+  auto_approve: true
+  currency: USD
+  human_approval_required: []
+  payment_threshold_usd: 5000
+
+saas:
+  enabled: true
+  default_plan: starter
+  plans:
+    starter:
+      max_users: 3
+      max_active_deals: 10
+    growth:
+      max_users: 10
+      max_active_deals: 50
+
+lead_scoring:
+  company_size: 0.25
+  revenue_estimate: 0.20
+  product_fit: 0.30
+  purchasing_likelihood: 0.15
+  contact_quality: 0.10
+
+supplier_scoring:
+  years_in_business: 0.20
+  certifications: 0.25
+  export_history: 0.20
+  price_consistency: 0.15
+  review_signals: 0.20
+
+logging:
+  level: INFO
+  console: true
+  json_files: true
+  rotate_mb: 10
+  keep_files: 30
+
+discovery:
+  region: "United States"
+  country_code: "US"
+  us_only: true
+  max_leads: 20
+  max_candidates: 80
+  results_per_query: 8
+  niche_mode: auto
+  max_product_images: 6
+  buyer_types:
+    - "promotional products distributor company USA"
+    - "corporate gifts distributor United States"
+    - "custom branded merchandise wholesaler USA"
+    - "bulk promotional drinkware buyer USA"
+  # Extra site-specific buyer-intent searches (RFQs, bulk purchase inquiries)
+  buyer_intent_queries:
+    - 'site:reddit.com "looking for manufacturer" promotional products USA'
+    - 'site:linkedin.com/posts "sourcing" custom drinkware United States'
+    - 'site:mfg.com RFQ promotional products'
+    - 'site:globalspec.com promotional products RFQ buyer'
+    - '"request for quote" custom tumblers buyer USA'
+    - '"bulk order" promotional products United States'
+  known_distributors:
+    - "hitpromo.net"
+    - "geiger.com"
+    - "4imprint.com"
+    - "ymlabs.com"
+    - "pcna.com"
+    - "alphabroder.com"
+  supplier_search_platforms:
+    - "alibaba.com"
+    - "made-in-china.com"
+    - "globalsources.com"
+
+pipeline:
+  fast_mode: true
+  use_llm_for: []
+  llm_model_fast: "llama3.2:1b"
+  parallel_workers: 8
+  search_pause_seconds: 0.2
+
+dashboard:
+  host: "127.0.0.1"
+  port: 8765

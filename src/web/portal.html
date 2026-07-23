@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Order Status — AI Procurement</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <style>
+    body { background: var(--bg); min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
+    .portal-wrap { max-width: 640px; width: 100%; }
+    .portal-brand { font-size: 0.75rem; color: var(--muted); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .portal-status { font-size: 1.1rem; color: var(--accent); margin: 0.5rem 0 1rem; font-weight: 600; }
+    .portal-ref { font-size: 0.75rem; color: var(--muted); margin-bottom: 1rem; }
+    .portal-timeline { list-style: none; padding: 0; margin: 0; }
+    .portal-timeline li { padding: 0.75rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    .portal-timeline strong { display: block; margin-bottom: 0.2rem; }
+    .portal-timeline span { color: var(--muted); }
+    .portal-error { color: var(--red); text-align: center; padding: 3rem; }
+    .portal-price-row { display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.9rem; }
+    .portal-price-row.total { font-weight: 700; font-size: 1.1rem; border-top: 1px solid var(--border); margin-top: 0.5rem; padding-top: 0.75rem; }
+    .portal-price-row.deposit span:last-child { color: var(--green); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="portal-wrap">
+    <div class="portal-brand">Your order status</div>
+    <div id="portalContent" class="card">
+      <p class="empty">Loading…</p>
+    </div>
+  </div>
+  <script>
+    const dealId = location.pathname.split("/").filter(Boolean).pop();
+    const esc = (s) => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    const fmt = (n) => Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    const fmtQty = (n) => (typeof n === "number" ? n.toLocaleString() : esc(n));
+
+    async function load() {
+      const el = document.getElementById("portalContent");
+      try {
+        const res = await fetch(`/api/portal/${dealId}`);
+        if (!res.ok) throw new Error("not found");
+        const d = await res.json();
+        const o = d.offer || {};
+        const ref = (d.deal_id || dealId || "").slice(0, 8).toUpperCase();
+        const timeline = d.timeline || [];
+        el.innerHTML = `
+          <div class="card-header"><h2>${esc(d.company_name || "Your order")}</h2></div>
+          <div style="padding:1.25rem">
+            <div class="portal-status">${esc(d.status_label || "In progress")}</div>
+            <div class="portal-ref">Order reference #${esc(ref)}</div>
+            <div class="detail-kv"><span class="detail-kv-label">Product</span><span class="detail-kv-value">${esc(o.product || "—")}</span></div>
+            <div class="detail-kv"><span class="detail-kv-label">Quantity</span><span class="detail-kv-value">${o.quantity ? fmtQty(o.quantity) + " units" : "—"}</span></div>
+            ${o.recommended_supplier ? `<div class="detail-kv"><span class="detail-kv-label">Supplier</span><span class="detail-kv-value">${esc(o.recommended_supplier)}</span></div>` : ""}
+            ${o.delivery_date ? `<div class="detail-kv"><span class="detail-kv-label">Delivery</span><span class="detail-kv-value">${esc(o.delivery_date)}</span></div>` : ""}
+            ${o.client_price_usd ? `
+              <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border)">
+                <div class="portal-price-row total"><span>Total</span><span>$${fmt(o.client_price_usd)}</span></div>
+                ${o.deposit_due_usd ? `<div class="portal-price-row deposit"><span>30% deposit due</span><span>$${fmt(o.deposit_due_usd)}</span></div>` : ""}
+              </div>
+            ` : ""}
+            ${o.summary ? `<p class="callout" style="margin-top:1rem;font-size:0.85rem">${esc(o.summary.slice(0, 280))}${o.summary.length > 280 ? "…" : ""}</p>` : ""}
+            <h3 style="margin:1.5rem 0 0.75rem;font-size:0.9rem">Timeline</h3>
+            ${timeline.length ? `<ul class="portal-timeline">${timeline.map((e) =>
+              `<li><strong>${esc(e.event)}</strong><span>${esc(e.detail || "")}</span></li>`
+            ).join("")}</ul>` : `<p class="empty" style="font-size:0.85rem">Your order is being processed. Check back soon for updates.</p>`}
+          </div>`;
+        document.title = `${d.company_name || "Order"} — Status`;
+      } catch {
+        el.innerHTML = `<div class="portal-error"><h2>Order not found</h2><p>This link may be invalid or the order is not yet available.</p></div>`;
+      }
+    }
+    load();
+  </script>
+</body>
+</html>

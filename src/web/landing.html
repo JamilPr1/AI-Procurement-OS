@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Procurement OS — Sourcing Platform</title>
+  <link rel="stylesheet" href="/static/landing.css" />
+</head>
+<body class="landing-body">
+  <header class="landing-header">
+    <div class="landing-header-inner">
+      <a href="/" class="landing-brand">
+        <div class="landing-logo">AI</div>
+        <div>
+          <div class="landing-brand-title">AI Procurement OS</div>
+          <div class="landing-brand-sub">Sourcing &amp; CRM platform</div>
+        </div>
+      </a>
+      <button type="button" class="landing-menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="landing-nav" id="mainNav">
+        <a href="#how-it-works">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#stores">Stores</a>
+        <a href="/login" class="landing-btn landing-btn-ghost">Sign in</a>
+        <a href="/store?tenant=demo" class="landing-btn landing-btn-primary">Browse store</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="landing-main">
+    <section class="landing-hero">
+      <p class="landing-eyebrow">White-label sourcing platform</p>
+      <h1>Source promotional products<br /><span>with AI from lead to delivery</span></h1>
+      <p class="landing-hero-lead">
+        One platform for buyer research, supplier matching, RFQs, proposals, and branded
+        product-finder storefronts — built for agencies and distributors.
+      </p>
+      <div class="landing-cta">
+        <a href="/login" class="landing-btn landing-btn-primary">Sign in to platform</a>
+        <a href="/store?tenant=demo" class="landing-btn landing-btn-ghost">View sample store</a>
+      </div>
+      <ul class="landing-trust">
+        <li>11-step sourcing pipeline</li>
+        <li>Multi-tenant storefronts</li>
+        <li>Supplier discovery &amp; RFQ</li>
+      </ul>
+    </section>
+
+    <section id="how-it-works" class="landing-section">
+      <h2 class="landing-section-title">How it works</h2>
+      <div class="landing-steps">
+        <article class="landing-step-card">
+          <span class="landing-step-num">1</span>
+          <h3>Discover buyers</h3>
+          <p>Research companies, score buying intent, and personalize outreach from one CRM.</p>
+        </article>
+        <article class="landing-step-card">
+          <span class="landing-step-num">2</span>
+          <h3>Match factories</h3>
+          <p>Find and verify suppliers, send RFQs, compare quotes, and select the best factory.</p>
+        </article>
+        <article class="landing-step-card">
+          <span class="landing-step-num">3</span>
+          <h3>Close &amp; fulfill</h3>
+          <p>Send client proposals, track production, and manage orders through delivery.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="features" class="landing-section">
+      <h2 class="landing-section-title">Platform features</h2>
+      <div class="landing-grid">
+        <article class="landing-card">
+          <h3>Hot Leads pipeline</h3>
+          <p>Guided wizard with review gates for outreach, suppliers, RFQ, quotes, and proposals.</p>
+        </article>
+        <article class="landing-card">
+          <h3>Supplier network</h3>
+          <p>Rank manufacturers, visit factory listings, and save your preferred supplier per deal.</p>
+        </article>
+        <article class="landing-card">
+          <h3>AI Product Finder</h3>
+          <p>Branded storefront per tenant — customers describe products and receive instant quotes.</p>
+        </article>
+        <article class="landing-card">
+          <h3>Deal tracking</h3>
+          <p>Monitor active orders, proposals sent, and closed revenue in one dashboard.</p>
+        </article>
+        <article class="landing-card">
+          <h3>Tenant management</h3>
+          <p>Provision stores, set margins, and manage plans from the platform admin console.</p>
+        </article>
+        <article class="landing-card">
+          <h3>Document automation</h3>
+          <p>AI drafts outreach emails, RFQs, and client proposals with your templates.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="landing-section landing-access">
+      <div class="landing-access-inner">
+        <div>
+          <h2>Platform access</h2>
+          <p>Sign in with credentials provided by your administrator. Super admins manage tenants; tenant operators run CRM and stores.</p>
+        </div>
+        <a href="/login" class="landing-btn landing-btn-primary">Go to sign in</a>
+      </div>
+    </section>
+
+    <section id="stores" class="landing-section">
+      <h2 class="landing-section-title">Partner storefronts</h2>
+      <p class="landing-section-lead">Browse live AI Product Finder stores powered by this platform.</p>
+      <div class="landing-store-grid" id="demoStores">
+        <p class="landing-muted">Loading stores…</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer">
+    <div class="landing-footer-inner">
+      <div class="landing-footer-brand">
+        <strong>AI Procurement OS</strong>
+        <span>v0.2</span>
+      </div>
+      <nav class="landing-footer-links">
+        <a href="/">Home</a>
+        <a href="/login">Sign in</a>
+        <a href="/store?tenant=demo">Sample store</a>
+        <a href="/marketing">Product overview</a>
+      </nav>
+    </div>
+    <p class="landing-footer-copy">&copy; AI Procurement OS. For authorized operators only.</p>
+  </footer>
+
+  <script>
+    const menuBtn = document.getElementById("menuBtn");
+    const mainNav = document.getElementById("mainNav");
+    menuBtn?.addEventListener("click", () => {
+      const open = mainNav.classList.toggle("open");
+      menuBtn.classList.toggle("open", open);
+      menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    mainNav?.querySelectorAll("a").forEach((a) => {
+      a.addEventListener("click", () => {
+        mainNav.classList.remove("open");
+        menuBtn.classList.remove("open");
+        menuBtn.setAttribute("aria-expanded", "false");
+      });
+    });
+
+    fetch("/api/saas/tenants").then((r) => r.json()).then((data) => {
+      const el = document.getElementById("demoStores");
+      const tenants = (data.tenants || []).filter((t) => t.slug && t.slug !== "default");
+      if (!tenants.length) {
+        el.innerHTML = "<p class=\"landing-muted\">No storefronts available yet.</p>";
+        return;
+      }
+      el.innerHTML = tenants.map((t) => {
+        const branding = t.branding || {};
+        const logo = esc(branding.logo_text || t.name?.slice(0, 2) || "S");
+        const color = branding.primary_color || "#3b82f6";
+        const accent = branding.accent_color || color;
+        const specs = (t.store_specialties || []).slice(0, 3);
+        const specLine = specs.length ? specs.join(" · ") : "Custom product sourcing";
+        return `
+        <a class="landing-store-card" href="/store?tenant=${encodeURIComponent(t.slug)}">
+          <div class="landing-store-card-head">
+            <span class="landing-store-initial" style="background:linear-gradient(135deg,${esc(color)},${esc(accent)})">${logo}</span>
+            <div>
+              <strong>${esc(t.name)}</strong>
+              <span class="landing-store-plan">${esc(t.plan || "standard")}</span>
+            </div>
+          </div>
+          <p>${esc(t.tagline || "Custom product sourcing")}</p>
+          <span class="landing-store-specs">${esc(specLine)}</span>
+          <span class="landing-store-cta">Visit store →</span>
+        </a>
+      `;
+      }).join("");
+    }).catch(() => {
+      document.getElementById("demoStores").innerHTML = "<p class=\"landing-muted\">Could not load storefronts.</p>";
+    });
+
+    function esc(s) {
+      return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+    }
+  </script>
+</body>
+</html>

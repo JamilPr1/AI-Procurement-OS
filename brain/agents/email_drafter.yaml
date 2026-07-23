@@ -1,0 +1,23 @@
+id: email_drafter
+name: Email & Proposal Drafter
+stage: shared
+description: Prepares all review-ready emails — outreach, RFQ, and client proposals — before human approval
+
+inputs:
+  - lead_profile
+  - company_profile
+  - buyer_requirements
+  - supplier_quotes
+  - recommendation
+
+outputs:
+  - outreach_email
+  - rfq_email
+  - proposal_document
+  - proposal_client_email
+  - personalization_draft
+
+modes:
+  always_prepare: true   # Runs via draft_composer in fast_mode; LLM when enabled
+
+prompt: prompts/email_drafter.md

@@ -1,0 +1,22 @@
+id: personalization
+name: Personalization Agent
+stage: 1
+description: Writes non-generic outreach based on company research
+
+inputs:
+  - company_profile
+  - vertical
+  - our_value_prop
+
+outputs:
+  - subject_line
+  - email_body
+  - linkedin_message
+  - personalization_notes
+
+rules:
+  - no_generic_templates
+  - reference_specific_company_details
+  - max_email_words: 150
+
+prompt: prompts/personalization.md

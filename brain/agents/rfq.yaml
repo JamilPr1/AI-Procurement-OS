@@ -1,0 +1,25 @@
+id: rfq
+name: RFQ Agent
+stage: 6
+description: Generates and sends quote requests to multiple suppliers
+
+inputs:
+  - verified_suppliers
+  - buyer_requirements
+  - product_spec
+
+outputs:
+  - rfq_id
+  - suppliers_contacted
+  - rfq_body
+  - sent_at
+  - response_deadline
+
+rfq_must_include:
+  - FOB
+  - MOQ
+  - lead_time
+  - certifications
+  - payment_terms
+
+prompt: prompts/rfq.md

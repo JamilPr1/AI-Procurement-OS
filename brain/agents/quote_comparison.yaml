@@ -1,0 +1,22 @@
+id: quote_comparison
+name: Quote Comparison Agent
+stage: 7
+description: Extracts and compares supplier quotes, recommends best options
+
+inputs:
+  - quotes[]
+
+outputs:
+  - comparison_table
+  - best_price
+  - fastest_production
+  - recommended_supplier
+  - reasoning
+
+criteria_weights:
+  price: 0.35
+  lead_time: 0.25
+  supplier_rating: 0.25
+  moq_fit: 0.15
+
+prompt: prompts/quote_comparison.md

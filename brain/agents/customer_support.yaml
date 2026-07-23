@@ -1,0 +1,21 @@
+id: customer_support
+name: Customer Support Agent
+stage: 10
+description: Answers routine status questions for customer portal
+
+inputs:
+  - order_status
+  - customer_question
+
+outputs:
+  - answer
+  - portal_snapshot
+  - escalation_needed
+
+escalate_to_human:
+  - disputes
+  - quality_complaints
+  - contract_questions
+  - custom_negotiations
+
+prompt: prompts/customer_support.md

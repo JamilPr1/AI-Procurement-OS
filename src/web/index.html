@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Procurement CRM</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Open menu">☰</button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <a href="/" class="sidebar-brand-link">
+        <div class="logo">AP</div>
+        <div>
+          <div class="brand-title">Procurement CRM</div>
+          <div class="brand-sub">AI Sourcing Platform</div>
+        </div>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-page="dashboard">Dashboard</button>
+      <button class="nav-item" data-page="leads">Leads <span class="nav-badge" id="badgeLeads">0</span></button>
+      <button class="nav-item" data-page="hot-leads">Hot Leads <span class="nav-badge hot" id="badgeHotLeads">0</span></button>
+      <button class="nav-item" data-page="tracking">Tracking <span class="nav-badge" id="badgeTracking">0</span></button>
+      <button class="nav-item" data-page="closed-deals">Closed <span class="nav-badge" id="badgeClosed">0</span></button>
+      <button class="nav-item" data-page="suppliers">Suppliers <span class="nav-badge" id="badgeSuppliers">0</span></button>
+      <button class="nav-item" data-page="saas">SaaS Platform</button>
+    </nav>
+    <div class="sidebar-footer">
+      <div id="userBadge" class="user-badge"></div>
+      <a href="/" class="nav-item" style="display:block;margin-bottom:0.5rem;font-size:0.8rem">Home ↗</a>
+      <a href="/store?tenant=demo" class="nav-item" style="display:block;margin-bottom:0.5rem;font-size:0.8rem" target="_blank">Demo store ↗</a>
+      <button type="button" id="btnLogout" class="nav-item" style="display:block;width:100%;text-align:left;margin-bottom:0.5rem;font-size:0.8rem;background:none;border:none;cursor:pointer;color:inherit">Logout</button>
+      <span class="badge" id="connStatus">Connecting</span>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle">Dashboard</h1>
+        <p id="pageSubtitle" class="subtitle">Overview of your sourcing operation</p>
+      </div>
+      <div class="topbar-actions">
+        <button id="btnReset" class="btn ghost" title="Delete all leads and deals">Reset</button>
+        <button id="btnStart" class="btn primary">Discover Leads</button>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section class="page active" id="page-dashboard">
+      <div class="kpi-row dashboard-kpis" id="kpiRow"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><h2>Active Pipeline</h2></div>
+          <div id="dashPipeline" class="card-body">No active run</div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2>Recent Activity</h2></div>
+          <div id="dashActivity" class="log-feed compact"></div>
+        </div>
+      </div>
+      <div class="card dashboard-agents-card">
+        <div class="card-header">
+          <h2>AI Agent Team</h2>
+          <span class="fleet-status" id="fleetStatus">Loading team…</span>
+        </div>
+        <div id="dashAgentFleet" class="crew-fleet-grid"></div>
+      </div>
+    </section>
+
+    <!-- LEADS -->
+    <section class="page" id="page-leads">
+      <div class="card">
+        <div class="card-header">
+          <h2>All Leads</h2>
+          <input type="search" id="searchLeads" class="search" placeholder="Search leads..." />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="tableLeads">
+            <thead><tr>
+              <th>Company</th><th>Email</th><th>Website</th><th>Score</th><th>Status</th><th>Updated</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="leadDetail" class="detail-panel hidden"></div>
+    </section>
+
+    <!-- Detail modal (leads, deals, suppliers) -->
+    <div id="detailModal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-backdrop" id="modalBackdrop"></div>
+      <div class="modal-panel">
+        <header class="modal-header">
+          <div class="modal-header-text">
+            <span class="modal-eyebrow" id="modalEyebrow">Lead</span>
+            <h2 id="modalTitle">Details</h2>
+            <p id="modalSubtitle" class="modal-subtitle"></p>
+          </div>
+          <button type="button" id="modalClose" class="modal-close" aria-label="Close">&times;</button>
+        </header>
+        <div id="modalBody" class="modal-body">
+          <div class="modal-loading">Loading details...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOT LEADS -->
+    <section class="page" id="page-hot-leads">
+      <div class="hot-leads-toolbar">
+        <div class="kpi-row compact" id="hotLeadsSummary"></div>
+        <div class="toolbar-actions">
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-hot-filter="hot">Hot (55+)</button>
+            <button class="filter-tab" data-hot-filter="warm">Warm (50+)</button>
+            <button class="filter-tab" data-hot-filter="all">All</button>
+          </div>
+          <button id="btnAnalyzeHot" class="btn primary">Re-analyze All</button>
+        </div>
+      </div>
+      <p class="page-intro">Open a lead to walk through each pipeline step one at a time. Review and approve at each gate before moving on.</p>
+      <div id="hotLeadsList" class="hot-leads-list"></div>
+      <div id="hotLeadStepView" class="hot-lead-step-view hidden"></div>
+    </section>
+
+    <!-- TRACKING -->
+    <section class="page" id="page-tracking">
+      <p class="page-intro page-intro-top">Active deals after proposal is sent. Open a deal to review documents and advance stages.</p>
+      <div id="trackingList" class="hot-leads-list"></div>
+      <div id="trackingDetailView" class="hot-lead-step-view hidden"></div>
+    </section>
+
+    <!-- CLOSED DEALS -->
+    <section class="page" id="page-closed-deals">
+      <p class="page-intro page-intro-top">Deals you manually close from Tracking appear here only. Revenue totals are on the <a class="link" href="#dashboard">Dashboard</a>.</p>
+      <div id="closedList" class="card" style="margin-top:1rem;padding:0"></div>
+    </section>
+
+    <!-- SUPPLIERS -->
+    <section class="page" id="page-suppliers">
+      <div class="card">
+        <div class="card-header">
+          <h2>All Suppliers</h2>
+          <input type="search" id="searchSuppliers" class="search" placeholder="Search suppliers..." />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="tableSuppliers">
+            <thead><tr>
+              <th>Factory</th><th>Platform</th><th>Price</th><th>MOQ</th><th>Trust</th><th>Updated</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAAS PLATFORM -->
+    <section class="page" id="page-saas">
+      <div class="kpi-row" id="saasKpis"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><h2>Create tenant</h2><span class="hint">Each tenant gets a branded AI Product Finder store</span></div>
+          <div class="card-body saas-form">
+            <label>Company name<input type="text" id="saasTenantName" placeholder="Acme Sourcing Co." /></label>
+            <label>URL slug<input type="text" id="saasTenantSlug" placeholder="acme (optional)" /></label>
+            <label>Plan
+              <select id="saasTenantPlan">
+                <option value="starter">Starter — 10 active deals</option>
+                <option value="growth">Growth — 50 active deals</option>
+              </select>
+            </label>
+            <label>Margin %<input type="number" id="saasTenantMargin" value="15" min="5" max="50" /></label>
+            <label>Tagline<input type="text" id="saasTenantTagline" placeholder="AI-powered custom product sourcing" /></label>
+            <button type="button" class="btn primary" id="btnCreateTenant">Create tenant &amp; store</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2>Plans</h2></div>
+          <div class="card-body" id="saasPlans"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1rem">
+        <div class="card-header">
+          <h2>Tenants</h2>
+          <div style="display:flex;gap:0.5rem">
+            <button type="button" class="btn ghost" id="btnSeedDemo">Seed demo data</button>
+            <button type="button" class="btn ghost" id="btnGenCreds">Generate credentials doc</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="saasTenantTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Plan</th>
+                <th>Active deals</th>
+                <th>Margin</th>
+                <th>Store</th>
+              </tr>
+            </thead>
+            <tbody id="saasTenantBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Product image lightbox -->
+  <div id="imageLightbox" class="image-lightbox hidden" role="dialog" aria-modal="true" aria-label="Product image viewer">
+    <div class="image-lightbox-backdrop" id="imageLightboxBackdrop"></div>
+    <div class="image-lightbox-panel">
+      <button type="button" class="image-lightbox-close" id="imageLightboxClose" aria-label="Close">&times;</button>
+      <button type="button" class="image-lightbox-nav prev" id="imageLightboxPrev" aria-label="Previous image">&#8249;</button>
+      <div class="image-lightbox-stage">
+        <img id="imageLightboxImg" src="" alt="" />
+      </div>
+      <button type="button" class="image-lightbox-nav next" id="imageLightboxNext" aria-label="Next image">&#8250;</button>
+      <p class="image-lightbox-caption" id="imageLightboxCaption"></p>
+      <span class="image-lightbox-counter" id="imageLightboxCounter"></span>
+    </div>
+  </div>
+
+  <script src="/static/detail.js?v=8"></script>
+  <script src="/static/hot-leads.js?v=13"></script>
+  <script src="/static/tracking.js?v=11"></script>
+  <script src="/static/closed-deals.js?v=7"></script>
+  <script src="/static/app.js?v=17"></script>
+  <script src="/static/dashboard-agents.js?v=9"></script>
+</body>
+</html>

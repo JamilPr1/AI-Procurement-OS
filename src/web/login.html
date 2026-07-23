@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in — AI Procurement OS</title>
+  <link rel="stylesheet" href="/static/landing.css" />
+  <style>
+    body.landing-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+    .login-top {
+      width: 100%;
+      max-width: 420px;
+      margin-bottom: 1rem;
+    }
+    .login-top a {
+      color: #93c5fd;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .login-wrap { width: 100%; max-width: 420px; }
+    .login-card {
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .login-card-head { padding: 1.5rem 1.5rem 0; }
+    .login-card-head h2 { margin: 0 0 0.25rem; font-size: 1.35rem; }
+    .login-card-head p { margin: 0; color: #94a3b8; font-size: 0.88rem; line-height: 1.5; }
+    .login-card-body { padding: 1.25rem 1.5rem 1.5rem; }
+    .login-card label {
+      display: block;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+    .login-card input {
+      width: 100%;
+      margin-top: 0.35rem;
+      padding: 0.75rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(15, 23, 42, 0.8);
+      color: #e2e8f0;
+      font-size: 1rem;
+    }
+    .login-card input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    .login-error {
+      color: #f87171;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      padding: 0.55rem 0.75rem;
+      background: rgba(248, 113, 113, 0.1);
+      border-radius: 8px;
+    }
+    .login-error.hidden { display: none; }
+    .login-role-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; }
+    .login-role-tab {
+      flex: 1;
+      padding: 0.55rem 0.5rem;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      background: transparent;
+      color: #94a3b8;
+      font-size: 0.78rem;
+      cursor: pointer;
+      text-align: center;
+    }
+    .login-role-tab.active {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #93c5fd;
+    }
+    .login-footer-hint {
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+    .login-footer-hint a { color: #93c5fd; text-decoration: none; }
+  </style>
+</head>
+<body class="landing-body">
+  <div class="login-top">
+    <a href="/">← Back to home</a>
+  </div>
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-card-head">
+        <h2 id="loginTitle">Sign in</h2>
+        <p id="loginSubtitle">Enter your platform credentials</p>
+      </div>
+      <div class="login-card-body">
+        <div class="login-role-tabs">
+          <button type="button" class="login-role-tab active" data-role="superadmin">Platform admin</button>
+          <button type="button" class="login-role-tab" data-role="tenant">Tenant operator</button>
+        </div>
+        <div id="loginError" class="login-error hidden"></div>
+        <form id="loginForm">
+          <label>Email address
+            <input type="email" id="loginEmail" required autocomplete="username" placeholder="you@company.com" />
+          </label>
+          <label>Password
+            <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="••••••••" />
+          </label>
+          <button type="submit" class="landing-btn landing-btn-primary" style="width:100%;margin-top:0.25rem">Sign in</button>
+        </form>
+      </div>
+    </div>
+    <p class="login-footer-hint">
+      <a href="/store?tenant=demo">Browse sample store</a>
+    </p>
+  </div>
+  <script>
+    const params = new URLSearchParams(location.search);
+    if (params.get("logout")) sessionStorage.removeItem("crm_user");
+
+    const ROLE_COPY = {
+      superadmin: { title: "Platform admin", sub: "Manage tenants, stores, and platform settings" },
+      tenant: { title: "Tenant sign in", sub: "Access your CRM dashboard and storefront" },
+    };
+
+    let activeRole = params.get("role") === "tenant" ? "tenant" : "superadmin";
+
+    function setRole(role) {
+      activeRole = role;
+      document.querySelectorAll(".login-role-tab").forEach((t) => {
+        t.classList.toggle("active", t.dataset.role === role);
+      });
+      const c = ROLE_COPY[role];
+      document.getElementById("loginTitle").textContent = c.title;
+      document.getElementById("loginSubtitle").textContent = c.sub;
+    }
+
+    document.querySelectorAll(".login-role-tab").forEach((btn) => {
+      btn.addEventListener("click", () => setRole(btn.dataset.role));
+    });
+    setRole(activeRole);
+
+    document.getElementById("loginForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const err = document.getElementById("loginError");
+      err.classList.add("hidden");
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: document.getElementById("loginEmail").value.trim(),
+          password: document.getElementById("loginPassword").value,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        err.textContent = data.detail || "Invalid email or password";
+        err.classList.remove("hidden");
+        return;
+      }
+      sessionStorage.setItem("crm_user", JSON.stringify(data.user));
+      const next = params.get("next");
+      if (next && next.startsWith("/app")) {
+        location.href = next;
+      } else if (data.user.role === "superadmin") {
+        location.href = "/app#saas";
+      } else {
+        location.href = "/app#dashboard";
+      }
+    };
+  </script>
+</body>
+</html>

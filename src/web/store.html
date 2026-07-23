@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Product Finder Store</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="stylesheet" href="/static/store.css" />
+</head>
+<body class="store-body">
+  <header class="store-header">
+    <div class="store-header-inner">
+      <a href="/" class="store-brand">
+        <div class="store-logo" id="storeLogo">AI</div>
+        <div class="store-brand-text">
+          <div class="store-name" id="storeName">AI Product Finder</div>
+          <div class="store-tagline" id="storeTagline">Custom sourcing in minutes</div>
+        </div>
+      </a>
+      <nav class="store-header-nav">
+        <a href="/" class="store-nav-link">Platform</a>
+        <a href="#how-store-works" class="store-nav-link">How it works</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="store-main">
+    <section class="store-hero" id="storeHero">
+      <div class="store-hero-grid">
+        <div class="store-hero-content">
+          <p class="store-eyebrow" id="storeEyebrow">AI-powered custom sourcing</p>
+          <h1 id="storeHeroTitle">Get a factory quote in minutes</h1>
+          <p class="store-hero-sub" id="storeHeroSub">
+            Tell us what you need — quantity, budget, branding, and delivery. Our AI matches
+            vetted manufacturers and builds a transparent landed quote for your order.
+          </p>
+          <form id="startForm" class="store-start-form">
+            <div class="store-search-wrap">
+              <input
+                type="text"
+                id="productQuery"
+                placeholder="e.g. 500 custom tumblers with logo for a corporate event"
+                autocomplete="off"
+                required
+              />
+              <button type="submit" class="btn primary store-search-btn">Get quote</button>
+            </div>
+          </form>
+          <div class="store-category-chips" id="categoryChips"></div>
+        </div>
+        <aside class="store-hero-aside">
+          <div class="store-trust-card">
+            <h3 id="storeTrustTitle">Why order here</h3>
+            <ul id="storeTrustList">
+              <li><strong>Vetted factories</strong> — matched from our supplier network</li>
+              <li><strong>All-in pricing</strong> — production, QC, and logistics included</li>
+              <li><strong>Fast quotes</strong> — typically ready in under 2 minutes</li>
+              <li><strong>Order tracking</strong> — portal updates from quote to shipment</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="store-section" id="how-store-works">
+      <h2 class="store-section-title">How ordering works</h2>
+      <div class="store-steps">
+        <div class="store-step">
+          <span class="store-step-num">1</span>
+          <h3>Describe your product</h3>
+          <p>Share quantity, materials, colors, logo specs, and delivery timeline.</p>
+        </div>
+        <div class="store-step">
+          <span class="store-step-num">2</span>
+          <h3>Review your quote</h3>
+          <p>Compare supplier options with unit price, MOQ, and landed total.</p>
+        </div>
+        <div class="store-step">
+          <span class="store-step-num">3</span>
+          <h3>Place your order</h3>
+          <p>Confirm with a deposit and track production through delivery.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="store-section store-catalog" id="storeCatalog">
+      <h2 class="store-section-title">Featured products</h2>
+      <p class="store-catalog-lead" id="storeSpecialtyLead"></p>
+      <div class="store-product-grid" id="storeProducts"></div>
+    </section>
+
+    <section class="store-chat hidden" id="storeChat">
+      <div class="store-chat-header">
+        <h2>Your sourcing assistant</h2>
+        <button type="button" class="btn ghost btn-sm" id="btnNewQuote">Start over</button>
+      </div>
+      <div class="store-chat-panel">
+        <div class="store-chat-messages" id="chatMessages"></div>
+        <div class="store-chat-input" id="chatInputArea">
+          <form id="answerForm">
+            <input type="text" id="answerInput" placeholder="Type your answer…" autocomplete="off" />
+            <button type="submit" class="btn primary">Send</button>
+          </form>
+        </div>
+        <div class="store-quote hidden" id="quotePanel"></div>
+        <div class="store-order-done hidden" id="orderDone"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="store-footer">
+    <div class="store-footer-inner">
+      <p>Powered by <a href="/">AI Procurement OS</a></p>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/login">Operator sign in</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="/static/store.js?v=8"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+id: proposal
+name: Proposal Agent
+stage: 8
+description: Builds polished client proposal with supplier comparison
+
+inputs:
+  - recommendation
+  - buyer_requirements
+  - margin_percent
+
+outputs:
+  - proposal_document
+  - supplier_comparison
+  - recommended_option
+  - client_price
+  - margin_amount
+
+human_gate: proposal_send
+
+prompt: prompts/proposal.md

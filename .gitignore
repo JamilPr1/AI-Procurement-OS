@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Local data (PII, deals)
+data/
+!data/.gitkeep
+
+# Logs (keep structure, ignore contents)
+logs/**/*.log
+logs/**/*.jsonl
+!logs/.gitkeep
+
+# Secrets
+.env
+*.pem
+
+# Confidential generated docs (contain demo credentials — regenerate locally)
+docs/PLATFORM_CREDENTIALS.md
+docs/PLATFORM_CREDENTIALS.docx
+docs/CLIENT_PRESENTATION.pdf
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# SQLite WAL
+*.db-shm
+*.db-wal

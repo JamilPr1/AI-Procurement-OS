@@ -1,0 +1,40 @@
+# When agents must pause for human approval
+
+gates:
+  proposal_send:
+    description: "Client proposal must be reviewed before sending"
+    agents: [proposal]
+    trigger: before_send
+    required_role: sales_manager
+
+  supplier_final_approval:
+    description: "Final factory selection before placing order"
+    agents: [supplier_verification, quote_comparison]
+    trigger: before_order
+    required_role: sourcing_manager
+
+  contract_sign:
+    description: "Contracts and POs require human signature"
+    agents: [order_tracking]
+    trigger: before_contract
+    required_role: operations
+
+  payment_over_threshold:
+    description: "Payments above threshold need authorization"
+    agents: [finance]
+    trigger: before_payment
+    required_role: finance
+    config_key: agency.payment_threshold_usd
+
+  outreach_first_batch:
+    description: "First outreach batch reviewed before auto-send enabled"
+    agents: [outreach]
+    trigger: before_send
+    required_role: sales_manager
+    phase: 1  # disable after Phase 1 validation
+
+# Escalation — agent failures route here
+escalation:
+  max_retries: 2
+  on_failure: log_and_pause
+  notify: console  # future: email, slack

@@ -1,0 +1,18 @@
+id: finance
+name: Finance Agent
+stage: 9
+description: Tracks invoices, deposits, and payment status
+
+inputs:
+  - order_id
+  - payment_events
+
+outputs:
+  - invoice_status
+  - deposit_received
+  - balance_due
+  - payment_schedule
+
+human_gate: payment_over_threshold
+
+prompt: prompts/finance.md

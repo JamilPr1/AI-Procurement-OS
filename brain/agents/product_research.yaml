@@ -1,0 +1,18 @@
+id: product_research
+name: Product Research Agent
+stage: 3
+description: Determines product category, materials, pricing bands, certifications
+
+inputs:
+  - buyer_requirements
+
+outputs:
+  - product_category
+  - materials
+  - typical_pricing_range
+  - certifications_required
+  - manufacturing_regions
+  - standard_packaging
+  - technical_notes
+
+prompt: prompts/product_research.md

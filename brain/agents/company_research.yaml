@@ -1,0 +1,20 @@
+id: company_research
+name: Company Research Agent
+stage: 1
+description: Builds a detailed profile from company website and public data
+
+inputs:
+  - lead_id
+  - company_name
+  - website_url
+
+outputs:
+  - company_summary
+  - products_services
+  - target_customers
+  - estimated_revenue
+  - employee_count
+  - recent_news
+  - personalization_hooks
+
+prompt: prompts/company_research.md

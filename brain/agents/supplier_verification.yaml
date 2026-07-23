@@ -1,0 +1,28 @@
+id: supplier_verification
+name: Supplier Verification Agent
+stage: 5
+description: Initial due diligence — reduces but does not eliminate risk
+
+inputs:
+  - supplier_shortlist
+
+outputs:
+  - trust_score
+  - risk_flags
+  - verification_notes
+  - recommendation
+
+checks:
+  - business_registration
+  - years_in_business
+  - certifications
+  - customer_reviews
+  - cross_source_consistency
+  - suspicious_pricing
+
+human_required:
+  - sample_evaluation
+  - factory_audit
+  - contract_review
+
+prompt: prompts/supplier_verification.md
