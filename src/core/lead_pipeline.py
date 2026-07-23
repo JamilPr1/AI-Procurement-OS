@@ -90,8 +90,9 @@ class LeadPipelineService:
             from src.core.outreach_images import resolve_outreach_images
 
             intent = extract_buying_intent(data, company)
-            dash = self.engine.brain.config.get("dashboard", {})
-            base = f"http://{dash.get('host', '127.0.0.1')}:{dash.get('port', 8765)}"
+            from src.core.platform_urls import get_public_base_url
+
+            base = get_public_base_url(self.engine.brain.config)
             factory_images = resolve_outreach_images(
                 lead_id, top_lead, intent, self.storage, self.tenant_id,
                 dashboard_base=base, force_refresh=True,

@@ -510,10 +510,9 @@ class PipelineEngine:
         )
 
     def _dashboard_base(self) -> str:
-        dash = self.brain.config.get("dashboard", {})
-        host = dash.get("host", "127.0.0.1")
-        port = dash.get("port", 8765)
-        return f"http://{host}:{port}"
+        from src.core.platform_urls import get_public_base_url
+
+        return get_public_base_url(self.brain.config)
 
     def _products_from_text(self, text: str) -> list[str]:
         kws = ("tumbler", "drinkware", "lip balm", "bag", "apparel", "pen", "mug", "bottle", "hat", "shirt", "towel")

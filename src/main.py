@@ -172,12 +172,16 @@ def cmd_presentation(args: argparse.Namespace) -> None:
 
 
 def cmd_dashboard(args: argparse.Namespace) -> None:
+    import os
     import uvicorn
+
     brain = Brain(PROJECT_ROOT)
     brain.load()
     cfg = brain.config.get("dashboard", {})
-    host = args.host or cfg.get("host", "127.0.0.1")
-    port = args.port or cfg.get("port", 8765)
+    host = args.host or os.getenv("DASHBOARD_HOST") or os.getenv("HOST") or cfg.get("host", "127.0.0.1")
+    port = args.port
+    if port is None:
+        port = int(os.getenv("PORT") or os.getenv("DASHBOARD_PORT") or cfg.get("port", 8765))
     print(f"\n  Dashboard: http://{host}:{port}\n")
     uvicorn.run("src.api.server:app", host=host, port=port, reload=False)
 

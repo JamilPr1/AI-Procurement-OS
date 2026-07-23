@@ -1,0 +1,21 @@
+# Render Blueprint — sync from repo root after linking GitHub.
+# Dashboard: https://dashboard.render.com/project/prj-d9h7fl3tqb8s73c4kei0
+
+services:
+  - type: web
+    name: ai-procurement-os
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m src.main dashboard --host 0.0.0.0
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: AUTO_APPROVE
+        value: "true"
+      - key: EMAIL_DRY_RUN
+        value: "true"
+      - key: OPENAI_API_KEY
+        sync: false

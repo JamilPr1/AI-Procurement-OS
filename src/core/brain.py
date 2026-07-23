@@ -56,9 +56,35 @@ class Brain:
 
     def load(self) -> None:
         self.config = self._load_yaml(self.brain_dir / "config.yaml")
+        self._apply_env_overrides()
         self._load_agents()
         self._load_workflows()
         self._load_policies()
+
+    def _apply_env_overrides(self) -> None:
+        import os
+
+        llm = self.config.setdefault("llm", {})
+        if os.getenv("LLM_PROVIDER"):
+            llm["provider"] = os.getenv("LLM_PROVIDER")
+        if os.getenv("OPENAI_API_KEY"):
+            llm["provider"] = "openai"
+        if os.getenv("LLM_MODEL"):
+            llm["model"] = os.getenv("LLM_MODEL")
+        if os.getenv("OLLAMA_BASE_URL"):
+            llm["base_url"] = os.getenv("OLLAMA_BASE_URL")
+
+        dash = self.config.setdefault("dashboard", {})
+        if os.getenv("DASHBOARD_HOST") or os.getenv("HOST"):
+            dash["host"] = os.getenv("DASHBOARD_HOST") or os.getenv("HOST")
+        if os.getenv("PORT") or os.getenv("DASHBOARD_PORT"):
+            dash["port"] = int(os.getenv("PORT") or os.getenv("DASHBOARD_PORT"))
+
+        data_dir = os.getenv("PLATFORM_DATA_DIR", "").strip()
+        if data_dir:
+            paths = self.config.setdefault("paths", {})
+            paths["data"] = data_dir
+            paths["database"] = f"{data_dir.rstrip('/')}/platform.db"
 
     def _load_yaml(self, path: Path) -> dict[str, Any]:
         if not path.exists():

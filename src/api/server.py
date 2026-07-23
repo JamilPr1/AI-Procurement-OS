@@ -116,13 +116,17 @@ def _tid() -> str:
 
 @app.get("/api/health")
 def health() -> dict:
+    from src.core.platform_urls import get_public_base_url
+
     engine = _init()
     dash = _brain.config.get("dashboard", {}) if _brain else {}  # type: ignore
+    public_url = get_public_base_url(_brain.config if _brain else {})
     return {
         "status": "ok",
         "llm": engine.llm.health_check(),
         "project": _brain.config.get("project") if _brain else {},
-        "store": {"enabled": True, "url": "/store?tenant=demo"},
+        "public_url": public_url,
+        "store": {"enabled": True, "url": f"{public_url}/store?tenant=demo"},
         "landing": "/",
         "crm": "/app",
         "login": "/login",

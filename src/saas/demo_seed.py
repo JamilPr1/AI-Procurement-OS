@@ -275,7 +275,11 @@ def collect_credentials(
     """Gather all platform credentials for documentation."""
     import os
 
-    base = f"http://{host}:{port}"
+    from src.core.platform_urls import get_public_base_url
+
+    base = get_public_base_url(brain_config)
+    if base.startswith("http://127.0.0.1") or base.startswith("http://localhost"):
+        base = f"http://{host}:{port}"
     tenants = storage.list_tenants()
     users = storage.list_tenant_users()
 
