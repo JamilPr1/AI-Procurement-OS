@@ -88,6 +88,8 @@ def notify_admin(subject: str, body: str, *, html: str | None = None) -> dict[st
     if result and result.get("status") == "sent":
         logger.info("Admin notification sent via SMTP to %s", to)
         return result
+    if result and result.get("status") == "error":
+        return result
     logger.info("Admin notification logged (no mail provider): %s — %s", to, subject)
     return {
         "status": "logged",

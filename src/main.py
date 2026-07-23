@@ -10,6 +10,12 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv(PROJECT_ROOT / ".env")
+except ImportError:
+    pass
+
 from src.agency import Agency
 from src.core.brain import Brain
 from src.core.llm import LLMClient
@@ -21,6 +27,8 @@ from src.saas import SaaSPlatform
 from src.saas.demo_seed import collect_credentials, seed_demo_data
 from src.saas.credentials_doc import generate_credentials_doc, generate_credentials_markdown
 from src.saas.client_presentation import generate_client_presentation
+from src.saas.marketing_pdf import generate_marketing_pdf
+from src.saas.marketing_images import generate_marketing_images, generate_story_images
 
 
 def get_platform():
@@ -171,6 +179,72 @@ def cmd_presentation(args: argparse.Namespace) -> None:
     print(f"\nClient presentation written to:\n  {out}\n")
 
 
+def cmd_marketing_kit(args: argparse.Namespace) -> None:
+    marketing_dir = PROJECT_ROOT / "docs" / "marketing"
+    pdf_out = marketing_dir / "TEAM-GUIDE.pdf"
+    images_dir = marketing_dir / "images"
+    old_pdf = marketing_dir / "MARKETING-KIT.pdf"
+
+    generate_marketing_pdf(marketing_dir, pdf_out)
+    if old_pdf.exists():
+        old_pdf.unlink()
+    print(f"\nTeam guide PDF:\n  {pdf_out}\n")
+
+    if not args.pdf_only:
+        posts = generate_marketing_images(images_dir)
+        stories = generate_story_images(images_dir)
+        for p in posts + stories:
+            print(f"  {p}")
+        print()
+
+
+def cmd_test_email(_args: argparse.Namespace) -> None:
+    """Send a test pilot-form notification to CONTACT_EMAIL."""
+    import os
+    from datetime import datetime, timezone
+
+    from src.core.email import EmailService
+    from src.core.notifications import admin_email, notify_demo_request
+
+    svc = EmailService()
+    to = admin_email()
+    print("\n=== Email test ===\n")
+    print(f"  To:      {to}")
+    print(f"  SMTP:    {svc.smtp_host or '(not set)'}")
+    print(f"  User:    {svc.smtp_user or '(not set)'}")
+    print(f"  Pass:    {'SET' if svc.smtp_pass else 'MISSING — add SMTP_PASS to .env'}")
+    print(f"  Resend:  {'SET' if os.getenv('RESEND_API_KEY') else '(not set)'}")
+    print(f"  Dry run: {svc.dry_run}\n")
+
+    if not svc.smtp_pass and not os.getenv("RESEND_API_KEY"):
+        print("Cannot send — add SMTP_PASS to .env (Gmail App Password) or RESEND_API_KEY")
+        print("  https://myaccount.google.com/apppasswords\n")
+        sys.exit(1)
+
+    result = notify_demo_request({
+        "name": "Local Test User",
+        "email": "test@example.com",
+        "company": "Local Test Co",
+        "message": "Test pilot form — drinkware",
+        "source": "test-email-cli",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+    print(json.dumps(result, indent=2))
+    if result.get("status") == "sent":
+        print(f"\nSuccess — check inbox: {to}\n")
+        return
+    err = result.get("error", "")
+    if "Application-specific password" in str(err) or "5.7.9" in str(err):
+        print("\nGmail rejected the password — use an App Password, NOT your regular Gmail password:")
+        print("  1. Enable 2-Step Verification on the Google account")
+        print("  2. Create App Password: https://myaccount.google.com/apppasswords")
+        print("  3. Put the 16-character code in .env as SMTP_PASS (no spaces)")
+        print("  4. Set EMAIL_DRY_RUN=false\n")
+    elif result.get("status") != "sent":
+        print("\nEmail was NOT delivered. Check SMTP_PASS and Gmail app password settings.\n")
+    sys.exit(1)
+
+
 def cmd_dashboard(args: argparse.Namespace) -> None:
     import os
     import uvicorn
@@ -238,6 +312,11 @@ def main() -> None:
     pres_p.add_argument("--host", default=None)
     pres_p.add_argument("--port", type=int, default=None)
 
+    mkt_p = sub.add_parser("marketing-kit", help="Generate TEAM-GUIDE.pdf and social post images")
+    mkt_p.add_argument("--pdf-only", action="store_true", help="Skip image generation")
+
+    sub.add_parser("test-email", help="Send test pilot-form notification to CONTACT_EMAIL")
+
     args = parser.parse_args()
     if not args.command:
         parser.print_help()
@@ -255,6 +334,8 @@ def main() -> None:
         "seed-demo": cmd_seed_demo,
         "credentials": cmd_credentials,
         "presentation": cmd_presentation,
+        "marketing-kit": cmd_marketing_kit,
+        "test-email": cmd_test_email,
     }
     commands[args.command](args)
 
