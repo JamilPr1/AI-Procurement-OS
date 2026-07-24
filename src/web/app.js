@@ -215,24 +215,9 @@ function renderSuppliers(suppliers) {
 }
 
 async function loadAgents() {
-  const res = await fetch("/api/agents");
-  const { agents } = await res.json();
-  $("agentGrid").innerHTML = agents.map((a) => {
-    const st = a.status || "idle";
-    const dotCls = st === "running" ? "running" : (a.last_status === "error" ? "error" : (a.last_status === "success" ? "success" : "idle"));
-    const mode = a.model === "fallback" ? "rule-based" : (a.model || "");
-    return `<div class="agent-card ${st === "running" ? "running" : ""} ${a.last_status === "success" ? "agent-ok" : ""}">
-      <div class="agent-num">Stage ${a.stage_num}</div>
-      <div class="agent-name">${esc(a.name)}</div>
-      <div style="font-size:0.7rem;color:var(--muted)">${esc(a.id)}</div>
-      <div class="agent-status">
-        <span class="agent-dot ${dotCls}"></span>
-        ${st === "running" ? "Running now" : (a.last_run ? `Last: ${a.last_status || "ok"}` : "Ready")}
-      </div>
-      ${mode ? `<div style="font-size:0.65rem;color:var(--muted);margin-top:0.25rem">${esc(mode)}${a.duration_ms ? ` · ${a.duration_ms}ms` : ""}</div>` : ""}
-      ${a.has_gate ? `<div style="font-size:0.65rem;color:var(--orange);margin-top:0.3rem">Human gate</div>` : ""}
-    </div>`;
-  }).join("");
+  if (typeof loadDashboardAgents === "function") {
+    return loadDashboardAgents();
+  }
 }
 
 $("btnTestAgents")?.addEventListener("click", async () => {
