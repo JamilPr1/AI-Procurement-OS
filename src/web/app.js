@@ -429,7 +429,8 @@ async function refreshRun() {
 // ── SSE ──
 
 function connectSSE() {
-  const es = new EventSource("/api/events");
+  const token = CRM_USER?.token || "";
+  const es = new EventSource(`/api/events?token=${encodeURIComponent(token)}`);
   es.onopen = () => {
     $("connStatus").textContent = "Live";
     $("connStatus").classList.add("ok");

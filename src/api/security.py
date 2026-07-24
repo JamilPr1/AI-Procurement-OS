@@ -92,9 +92,13 @@ async def auth_middleware(request: Request, call_next):  # noqa: ANN001
     path = request.url.path
     if path.startswith("/api/") and not _is_public_api(request.method, path):
         auth = request.headers.get("Authorization", "")
-        if not auth.startswith("Bearer "):
+        token = auth[7:].strip() if auth.startswith("Bearer ") else ""
+        # EventSource cannot send headers — allow token query param for SSE only
+        if not token and request.method == "GET" and path == "/api/events":
+            token = request.query_params.get("token", "").strip()
+        if not token:
             return JSONResponse({"detail": "Authentication required"}, status_code=401)
-        user = verify_token(auth[7:].strip())
+        user = verify_token(token)
         if not user:
             return JSONResponse(
                 {"detail": "Invalid or expired session — please sign in again"},

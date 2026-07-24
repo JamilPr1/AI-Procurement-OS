@@ -23,6 +23,19 @@
       }
       opts.headers = headers;
     }
-    return nativeFetch(url, opts);
+    return nativeFetch(url, opts).then((res) => {
+      if (
+        res.status === 401 &&
+        path.startsWith("/api/") &&
+        !path.startsWith("/api/auth/login")
+      ) {
+        sessionStorage.removeItem("crm_user");
+        const next = encodeURIComponent(
+          location.pathname + location.search + location.hash
+        );
+        location.replace(`/login?next=${next}`);
+      }
+      return res;
+    });
   };
 })();
