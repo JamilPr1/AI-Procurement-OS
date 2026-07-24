@@ -142,11 +142,13 @@ async function loadDashboard() {
   const ar = data.active_run;
   if (ar && ar.status) {
     const lead = ar.summary?.lead || {};
+    const err = ar.error ? `<div class="kv error"><span>Error</span><span>${esc(ar.error)}</span></div>` : "";
     $("dashPipeline").innerHTML = `
       <div class="kv"><span>Status</span><span class="status-pill status-${ar.status}">${ar.status}</span></div>
       <div class="kv"><span>Stage</span><span>${ar.current_stage || "-"}</span></div>
       <div class="kv"><span>Lead</span><span>${lead.company || "-"}</span></div>
       <div class="kv"><span>Email</span><span>${lead.email || "-"}</span></div>
+      ${err}
     `;
     if (ar.stages) renderStages(ar.stages, ar.status);
   } else {
@@ -470,7 +472,10 @@ function connectSSE() {
     }
     if (ev.type === "run_failed") {
       log(`FAILED: ${ev.data.error}`, "error");
+      if (currentPage === "dashboard") log(`FAILED: ${ev.data.error}`, "error", "dashActivity");
       if (typeof onFleetEvent === "function") onFleetEvent(ev);
+      refreshRun();
+      if (currentPage === "dashboard") loadDashboard();
     }
     if (ev.type === "run_started") {
       log(`Run started: ${ev.data.run_id}`);
@@ -588,8 +593,13 @@ if (btnReset) {
   btnReset.onclick = async () => {
     if (!confirm("Delete ALL leads, deals, and suppliers? This cannot be undone.")) return;
     btnReset.disabled = true;
-    const res = await fetch("/api/admin/reset?include_suppliers=true", { method: "POST" });
+    const res = await fetch("/api/workspace/reset?include_suppliers=true", { method: "POST" });
     const data = await res.json();
+    if (!res.ok) {
+      alert(data.detail || "Reset failed — you may need to sign in again.");
+      btnReset.disabled = false;
+      return;
+    }
     log(`Reset complete: ${data.leads_deleted || 0} leads, ${data.deals_deleted || 0} deals removed`);
     loadOverview?.();
     loadLeads?.();

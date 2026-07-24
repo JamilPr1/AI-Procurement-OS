@@ -32,13 +32,17 @@ class WebSearch:
             time.sleep(self.pause_seconds)
         return results
 
-    def search_parallel(self, queries: list[str], max_results: int = 5) -> list[dict[str, Any]]:
+    def search_parallel(self, queries: list[str], max_results: int = 5, timeout: float = 45.0) -> list[dict[str, Any]]:
         all_results: list[dict[str, Any]] = []
         seen: set[str] = set()
         with ThreadPoolExecutor(max_workers=min(self.workers, len(queries) or 1)) as pool:
             futures = {pool.submit(self.search, q, max_results): q for q in queries}
             for fut in as_completed(futures):
-                for r in fut.result():
+                try:
+                    batch = fut.result(timeout=timeout)
+                except Exception as e:
+                    batch = [{"error": str(e), "source_query": futures[fut]}]
+                for r in batch:
                     url = r.get("url", "")
                     if url and url not in seen and "error" not in r:
                         seen.add(url)

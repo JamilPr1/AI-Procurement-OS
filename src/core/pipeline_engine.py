@@ -138,7 +138,17 @@ class PipelineEngine:
             bus.publish("run_completed", {"run_id": run_id, "summary": summary, "elapsed_sec": elapsed})
         except Exception as e:
             self.logger.error("Pipeline failed", run_id=run_id, error=str(e))
-            self.storage.update_pipeline_run(run_id, status="failed", error=str(e))
+            run = self.storage.get_pipeline_run(run_id)
+            if run:
+                ss = run["stage_status"]
+                cur = run.get("current_stage")
+                if cur and ss.get(cur) == "running":
+                    ss[cur] = "failed"
+                self.storage.update_pipeline_run(
+                    run_id, status="failed", error=str(e), stage_status=ss
+                )
+            else:
+                self.storage.update_pipeline_run(run_id, status="failed", error=str(e))
             bus.publish("run_failed", {"run_id": run_id, "error": str(e)})
 
     def _should_continue(self, run_id: str) -> bool:

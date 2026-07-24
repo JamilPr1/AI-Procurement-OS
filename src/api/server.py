@@ -853,9 +853,19 @@ def repair_company_names() -> dict:
 
 @app.post("/api/admin/reset")
 def reset_workspace(include_suppliers: bool = False) -> dict:
-    """Delete all leads and deals — fresh start."""
+    """Delete all leads and deals — fresh start (super admin)."""
     _init()
     result = _storage.reset_workspace(_tid(), include_suppliers=include_suppliers)  # type: ignore
+    return {"status": "ok", **result}
+
+
+@app.post("/api/workspace/reset")
+def reset_tenant_workspace(include_suppliers: bool = False) -> dict:
+    """Delete all leads and deals for the signed-in tenant."""
+    global _active_run_id
+    _init()
+    result = _storage.reset_workspace(_tid(), include_suppliers=include_suppliers)  # type: ignore
+    _active_run_id = None
     return {"status": "ok", **result}
 
 

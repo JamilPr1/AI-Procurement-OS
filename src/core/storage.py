@@ -180,6 +180,7 @@ class Storage:
         "supplier_approvals",
         "supplier_selection",
         "store_sessions",
+        "niche",
     ]
 
     def __init__(self, db_path: Path, data_dir: Path, logger: PlatformLogger) -> None:
@@ -217,6 +218,7 @@ class Storage:
 
     def save_json_entity(self, entity_type: str, entity_id: str, data: dict[str, Any]) -> Path:
         path = self.data_dir / entity_type / f"{entity_id}.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
         return path
 

@@ -329,7 +329,10 @@ body {
 }
 .status-active, .status-new { background: var(--accent-dim); color: var(--accent); }
 .status-completed, .status-awaiting_approval { background: var(--green-dim); color: var(--green); }
+.status-running { background: var(--accent-dim); color: var(--accent); }
+.status-failed { background: #3d1515; color: #f87171; }
 .status-paused { background: #3d2a10; color: var(--orange); }
+.kv.error span:last-child { color: #f87171; font-size: 0.85rem; }
 
 .link { color: var(--accent); text-decoration: none; }
 .link:hover { text-decoration: underline; }
