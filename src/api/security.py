@@ -65,6 +65,8 @@ def _is_public_api(method: str, path: str) -> bool:
         return True
     if path.startswith("/api/store/") or path.startswith("/api/portal/"):
         return True
+    if method == "GET" and path.startswith("/api/media/"):
+        return True
     if method == "GET" and path == "/api/saas/tenants":
         return True
     return False

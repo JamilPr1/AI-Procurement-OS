@@ -104,6 +104,9 @@ class Brain:
         elif os.getenv("RENDER") and not os.getenv("PIPELINE_PARALLEL_WORKERS"):
             pipe["parallel_workers"] = min(int(pipe.get("parallel_workers", 8)), 3)
 
+        if os.getenv("RENDER") and not os.getenv("SMTP_PASS", "").strip():
+            os.environ.setdefault("EMAIL_DRY_RUN", "true")
+
     def _load_yaml(self, path: Path) -> dict[str, Any]:
         if not path.exists():
             raise FileNotFoundError(f"Brain file missing: {path}")

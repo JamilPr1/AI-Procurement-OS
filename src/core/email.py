@@ -69,9 +69,20 @@ class EmailService:
         if cc:
             recipients.append(cc)
 
-        with smtplib.SMTP(self.smtp_host, self.smtp_port, timeout=30) as server:
-            server.starttls()
-            server.login(self.smtp_user, self.smtp_pass)
-            server.sendmail(self.from_email, recipients, msg.as_string())
+        try:
+            with smtplib.SMTP(self.smtp_host, self.smtp_port, timeout=30) as server:
+                server.starttls()
+                server.login(self.smtp_user, self.smtp_pass)
+                server.sendmail(self.from_email, recipients, msg.as_string())
+        except Exception as e:
+            return {
+                "status": "dry_run",
+                "to": to,
+                "subject": subject,
+                "body_preview": body[:500],
+                "html_preview": (html_body or "")[:500] if html_body else None,
+                "message": f"Email saved locally — SMTP unavailable ({e})",
+                "smtp_error": str(e),
+            }
 
         return {"status": "sent", "to": to, "subject": subject}

@@ -475,6 +475,15 @@ class LeadPipelineService:
             }
 
         if next_step.get("review") and not auto_approve:
+            if not ctx_data["pending"]:
+                self._sync_pending_from_drafts(
+                    lead_id,
+                    deal_id,
+                    None,
+                    ctx_data["outreach"],
+                    ctx_data["proposal"],
+                    ctx_data["rfqs"] or [],
+                )
             return {
                 "status": "pending_review",
                 "gate": next_step.get("gate"),

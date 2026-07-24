@@ -18,7 +18,7 @@ services:
       - key: AUTO_APPROVE
         value: "true"
       - key: EMAIL_DRY_RUN
-        value: "false"
+        value: "true"
       - key: CONTACT_EMAIL
         value: aarfa.developers@gmail.com
       - key: NOTIFY_EMAIL

@@ -318,10 +318,18 @@ def determine_next_step(
     if not _proposal_ready(proposal, stage):
         return _action("proposal", "Build Proposal", "Generate client-facing offer for your review", deal_id=deal_id)
 
+    prop_status = (proposal or {}).get("status")
+    if prop_status != "sent":
+        return _action(
+            "proposal",
+            "Review Proposal Email",
+            "Approve and send proposal to client",
+            deal_id=deal_id,
+            review=True,
+            gate="proposal_send",
+        )
+
     if stage == "proposal":
-        prop_status = (proposal or {}).get("status")
-        if prop_status != "sent":
-            return _action("proposal", "Review Proposal Email", "Approve and send proposal to client", deal_id=deal_id, review=True, gate="proposal_send")
         return _action("proposal", "Send to Tracking", "Proposal sent — opens on Tracking page", deal_id=deal_id)
 
     return _action("supplier_discovery", "Continue Sourcing", "Advance sourcing pipeline", deal_id=deal_id)

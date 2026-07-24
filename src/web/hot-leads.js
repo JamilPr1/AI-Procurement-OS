@@ -724,7 +724,7 @@ async function runCurrentStep(leadId) {
   startActivityMessages(stage);
   try {
     const res = await fetch(`/api/hot-leads/${leadId}/advance?auto_approve=false`, { method: "POST" });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.detail || "Step failed");
     activeBrief = data.brief || await fetchBrief(leadId);
     stepRunning = false;
@@ -750,7 +750,7 @@ async function approveCurrentStep(leadId) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(fields),
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.detail || "Approve failed");
     activeBrief = data.brief || await fetchBrief(leadId);
     viewingStepId = null;
