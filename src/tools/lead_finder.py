@@ -59,10 +59,11 @@ class LeadFinder:
         self.buyer_types = disc.get("buyer_types", ["promotional products distributor"])
         self.known = disc.get("known_distributors", [])
         self.intent_queries = disc.get("buyer_intent_queries", [])
+        self.skip_contact = disc.get("skip_contact_during_discovery", False)
         workers = pipe.get("parallel_workers", 8)
         pause = pipe.get("search_pause_seconds", 0.2)
         self.search = WebSearch(pause_seconds=pause, workers=workers, region="us-en")
-        self.fetcher = WebsiteFetcher(timeout=10)
+        self.fetcher = WebsiteFetcher(timeout=8)
         self.workers = workers
 
     def discover(self, on_progress=None, niche: dict | None = None) -> list[dict[str, Any]]:
@@ -77,10 +78,11 @@ class LeadFinder:
         if on_progress:
             on_progress("searching", f"Running {len(queries)} US-focused searches...")
         candidates = self.search.search_parallel(queries, max_results=self.results_per_query)
-        candidates = candidates[: self.max_candidates * 2]
+        candidates = candidates[: self.max_candidates]
 
         leads: list[dict[str, Any]] = []
         seen: set[str] = set()
+        qualify_timeout = 20.0
 
         def process(result: dict) -> dict | None:
             url = result.get("url", "")
@@ -104,7 +106,7 @@ class LeadFinder:
                 return None
             emails = site.get("emails") or []
             phones = site.get("phones") or []
-            if not emails and not phones:
+            if not self.skip_contact and not emails and not phones:
                 contact = self.fetcher.find_contact_page(url)
                 if contact:
                     emails = contact.get("emails") or []
@@ -162,12 +164,24 @@ class LeadFinder:
         if on_progress:
             on_progress("fetching", f"Qualifying {len(candidates)} US buyer candidates...")
 
+        checked = 0
         with ThreadPoolExecutor(max_workers=self.workers) as pool:
             futs = [pool.submit(process, r) for r in candidates]
             for fut in as_completed(futs):
-                lead = fut.result()
+                if len(leads) >= self.max_leads:
+                    break
+                checked += 1
+                try:
+                    lead = fut.result(timeout=qualify_timeout)
+                except Exception:
+                    lead = None
                 if lead:
                     leads.append(lead)
+                if on_progress and (checked % 5 == 0 or len(leads) >= self.max_leads):
+                    on_progress(
+                        "fetching",
+                        f"Qualified {len(leads)} leads ({min(checked, len(candidates))}/{len(candidates)} checked)...",
+                    )
 
         leads.sort(key=lambda x: x["lead_score"], reverse=True)
         return leads[: self.max_leads]

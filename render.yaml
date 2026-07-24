@@ -39,3 +39,11 @@ services:
         sync: false
       - key: OPENAI_API_KEY
         sync: false
+      - key: DISCOVERY_MAX_CANDIDATES
+        value: "30"
+      - key: DISCOVERY_MAX_LEADS
+        value: "12"
+      - key: DISCOVERY_SKIP_CONTACT
+        value: "true"
+      - key: PIPELINE_PARALLEL_WORKERS
+        value: "3"

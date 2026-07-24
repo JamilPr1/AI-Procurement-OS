@@ -400,17 +400,36 @@ function showGate(data, { notify = false } = {}) {
 
 async function refreshRun() {
   if (!currentRunId) {
-    const res = await fetch("/api/runs/active");
-    const data = await res.json();
-    if (data.active) currentRunId = data.run_id;
+    try {
+      const res = await fetch("/api/runs/active");
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.active) currentRunId = data.run_id;
+    } catch {
+      return;
+    }
   }
   if (!currentRunId) return;
-  const res = await fetch(`/api/runs/${currentRunId}`);
-  const data = await res.json();
-  renderStages(data.stages || [], data.status);
-  renderSummary(data);
-  showGate(data);
-  return data;
+  try {
+    const res = await fetch(`/api/runs/${currentRunId}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    renderStages(data.stages || [], data.status);
+    renderSummary(data);
+    showGate(data);
+    if (currentPage === "dashboard" && data.error) {
+      const pipe = $("dashPipeline");
+      if (pipe && !pipe.querySelector(".kv.error")) {
+        pipe.insertAdjacentHTML(
+          "beforeend",
+          `<div class="kv error"><span>Error</span><span>${esc(data.error)}</span></div>`
+        );
+      }
+    }
+    return data;
+  } catch {
+    return;
+  }
 }
 
 // ── SSE ──

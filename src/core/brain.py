@@ -86,6 +86,24 @@ class Brain:
             paths["data"] = data_dir
             paths["database"] = f"{data_dir.rstrip('/')}/platform.db"
 
+        disc = self.config.setdefault("discovery", {})
+        if os.getenv("DISCOVERY_MAX_CANDIDATES"):
+            disc["max_candidates"] = int(os.getenv("DISCOVERY_MAX_CANDIDATES", "30"))
+        if os.getenv("DISCOVERY_MAX_LEADS"):
+            disc["max_leads"] = int(os.getenv("DISCOVERY_MAX_LEADS", "12"))
+        if os.getenv("DISCOVERY_SKIP_CONTACT", "").lower() in ("1", "true", "yes"):
+            disc["skip_contact_during_discovery"] = True
+        if os.getenv("RENDER") and not os.getenv("DISCOVERY_MAX_CANDIDATES"):
+            disc["max_candidates"] = min(int(disc.get("max_candidates", 80)), 30)
+            disc["max_leads"] = min(int(disc.get("max_leads", 20)), 12)
+            disc["skip_contact_during_discovery"] = True
+
+        pipe = self.config.setdefault("pipeline", {})
+        if os.getenv("PIPELINE_PARALLEL_WORKERS"):
+            pipe["parallel_workers"] = int(os.getenv("PIPELINE_PARALLEL_WORKERS", "3"))
+        elif os.getenv("RENDER") and not os.getenv("PIPELINE_PARALLEL_WORKERS"):
+            pipe["parallel_workers"] = min(int(pipe.get("parallel_workers", 8)), 3)
+
     def _load_yaml(self, path: Path) -> dict[str, Any]:
         if not path.exists():
             raise FileNotFoundError(f"Brain file missing: {path}")
